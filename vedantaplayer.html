@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #181818;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        #video-container {
+            width: 80%;
+            max-width: 800px;
+            position: relative;
+        }
+        video {
+            width: 100%;
+            border-radius: 8px;
+        }
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        button {
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 18px;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+        input[type="url"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            width: 80%;
+        }
+        #url-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #share-url {
+            margin-top: 10px;
+            color: #ccc;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="url-container">
+        <input type="url" id="video-url" placeholder="Enter video URL here" />
+        <button onclick="loadVideo()">Load Video</button>
+        <p id="share-url"></p>
+    </div>
+    <div id="video-container" style="display: none;">
+        <video id="video" controls>
+            Your browser does not support the video tag.
+        </video>
+        <div id="controls">
+            <button onclick="seek(-10)">⏪ 10s</button>
+            <button onclick="togglePlayPause()">⏯</button>
+            <button onclick="seek(10)">⏩ 10s</button>
+            <button onclick="toggleMute()">🔊/🔇</button>
+            <button onclick="toggleFullscreen()">🖥️</button>
+        </div>
+    </div>
+
+    <script>
+        const videoElement = document.getElementById('video');
+        const videoUrlInput = document.getElementById('video-url');
+        const videoContainer = document.getElementById('video-container');
+        const shareUrlElement = document.getElementById('share-url');
+
+        function loadVideo() {
+            const url = videoUrlInput.value;
+            if (url) {
+                videoElement.src = url;
+                videoContainer.style.display = 'block';
+                videoUrlInput.style.display = 'none';
+                document.querySelector('button').style.display = 'none';
+                generateShareUrl();
+                videoElement.play();
+            }
+        }
+
+        function generateShareUrl() {
+            const currentUrl = window.location.href.split('?')[0];
+            const videoUrl = encodeURIComponent(videoElement.src);
+            shareUrlElement.innerHTML = `Share this link: <a href="?v=${videoUrl}" target="_blank">${currentUrl}?v=${videoUrl}</a>`;
+        }
+
+        function togglePlayPause() {
+            if (videoElement.paused) {
+                videoElement.play();
+            } else {
+                videoElement.pause();
+            }
+        }
+
+        function toggleMute() {
+            videoElement.muted = !videoElement.muted;
+        }
+
+        function toggleFullscreen() {
+            if (videoElement.requestFullscreen) {
+                videoElement.requestFullscreen();
+            } else if (videoElement.mozRequestFullScreen) {
+                videoElement.mozRequestFullScreen();
+            } else if (videoElement.webkitRequestFullscreen) {
+                videoElement.webkitRequestFullscreen();
+            } else if (videoElement.msRequestFullscreen) {
+                videoElement.msRequestFullscreen();
+            }
+        }
+
+        function seek(seconds) {
+            videoElement.currentTime += seconds;
+        }
+
+        // Handle keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ') { // Space for Play/Pause
+                togglePlayPause();
+            } else if (event.key === 'm') { // 'm' for mute/unmute
+                toggleMute();
+            } else if (event.key === 'f') { // 'f' for fullscreen
+                toggleFullscreen();
+            } else if (event.key === 'ArrowLeft') { // Left Arrow for backward 10s
+                seek(-10);
+            } else if (event.key === 'ArrowRight') { // Right Arrow for forward 10s
+                seek(10);
+            }
+        });
+
+        // Load video if URL is provided in query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoUrl = urlParams.get('v');
+        if (videoUrl) {
+            videoElement.src = decodeURIComponent(videoUrl);
+            videoContainer.style.display = 'block';
+            videoElement.play();
+            generateShareUrl();
+        }
+    </script>
+</body>
+</html>
