@@ -26,26 +26,6 @@
             width: 100%;
             border-radius: 8px;
         }
-        #controls {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        button {
-            background: rgba(255, 255, 255, 0.5);
-            border: none;
-            padding: 8px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-size: 18px;
-        }
-        button:hover {
-            background: rgba(255, 255, 255, 0.8);
-        }
         input[type="url"] {
             padding: 10px;
             border-radius: 5px;
@@ -75,13 +55,6 @@
         <video id="video" controls>
             Your browser does not support the video tag.
         </video>
-        <div id="controls">
-            <button onclick="seek(-10)">⏪ 10s</button>
-            <button onclick="togglePlayPause()">⏯</button>
-            <button onclick="seek(10)">⏩ 10s</button>
-            <button onclick="toggleMute()">🔊/🔇</button>
-            <button onclick="toggleFullscreen()">🖥️</button>
-        </div>
     </div>
 
     <script>
@@ -107,49 +80,6 @@
             const videoUrl = encodeURIComponent(videoElement.src);
             shareUrlElement.innerHTML = `Share this link: <a href="?v=${videoUrl}" target="_blank">${currentUrl}?v=${videoUrl}</a>`;
         }
-
-        function togglePlayPause() {
-            if (videoElement.paused) {
-                videoElement.play();
-            } else {
-                videoElement.pause();
-            }
-        }
-
-        function toggleMute() {
-            videoElement.muted = !videoElement.muted;
-        }
-
-        function toggleFullscreen() {
-            if (videoElement.requestFullscreen) {
-                videoElement.requestFullscreen();
-            } else if (videoElement.mozRequestFullScreen) {
-                videoElement.mozRequestFullScreen();
-            } else if (videoElement.webkitRequestFullscreen) {
-                videoElement.webkitRequestFullscreen();
-            } else if (videoElement.msRequestFullscreen) {
-                videoElement.msRequestFullscreen();
-            }
-        }
-
-        function seek(seconds) {
-            videoElement.currentTime += seconds;
-        }
-
-        // Handle keyboard shortcuts
-        document.addEventListener('keydown', function(event) {
-            if (event.key === ' ') { // Space for Play/Pause
-                togglePlayPause();
-            } else if (event.key === 'm') { // 'm' for mute/unmute
-                toggleMute();
-            } else if (event.key === 'f') { // 'f' for fullscreen
-                toggleFullscreen();
-            } else if (event.key === 'ArrowLeft') { // Left Arrow for backward 10s
-                seek(-10);
-            } else if (event.key === 'ArrowRight') { // Right Arrow for forward 10s
-                seek(10);
-            }
-        });
 
         // Load video if URL is provided in query parameters
         const urlParams = new URLSearchParams(window.location.search);
